@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <title>Sleep Analysis</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="../static/css/frontend.css" />
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="container-fluid">
+                <h1 class="text-center">Sleep Analysis Visualization</h1>
+                <hr>
+
+                <!-- Loading Window -->
+                <div id="loading-window">
+                    <img id="loading-gif" src="https://th.bing.com/th/id/R.aaaf80ba7a992e06d59f870aa2de1cbf?rik=8eGIkNVKpIh9dg&riu=http%3a%2f%2ficon-library.com%2fimages%2floading-icon-animated-gif%2floading-icon-animated-gif-7.jpg&ehk=eWiML%2fGFOE9eqGbyMM3gosCUIDgIIcvnLrQsv7A5wGc%3d&risl=&pid=ImgRaw&r=0" alt="Loading...">
+                </div>
+
+                <!-- Visualization Panels -->
+
+                <!-- Panel A & D Visualization starts -->
+
+                <div class="row">
+                    <div class="col-md-7 visual_panels">
+
+                        <!-- Panel A Visualization starts-->
+
+                        <div id="sleep_stages_panel_A" class="border border-dark rounded bg-light shadow-sm mb-2 mt-2 ms-2 me-1 p-2">
+                            <!-- Panel A Control bar --> 
+                            <div id = "Panel_A_content_div">
+                                <div id = "sleep_stages_control_panel_div" class="row m-2 p-2">
+                                        <!-- Patient Selection -->
+                                        <div class="col-md-3">
+                                            <select id="Patients_selector" class="form-select" aria-label="Default select example" onchange="changePatientSelected()">
+                                                <option value="Select a Patient" selected>Select a Patient</option>
+                                            </select>
+                                        </div>
+                                        <!-- Session Selection -->
+                                        <div class="col-md-5">
+                                            <div class="row">
+                                                <div class = "col-md-5" style="text-align: end;">
+                                                    <label class="col-form-label" >Select Session: </label>
+                                                </div>
+                                                <div class="container">
+                                                    <div class="session" onclick="selectSession(1)">1</div>
+                                                    <div class="session" onclick="selectSession(2)"> 2</div>
+                                                    <div class="session" onclick="selectSession(3)"> 3</div>
+                                                    <div class="session" onclick="selectSession(4)"> 4</div>
+                                                    <div class="session" onclick="selectSession(5)"> 5</div>
+                                                    <div class="session" onclick="selectSession(6)"> 6</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Toggle for Sleep Stage view -->
+                                        <div class="col-md-4">
+                                            <div class="row">
+                                                <div class = "col-md-5" style="text-align: end;">
+                                                    <label class="col-form-label" for="SleepStageViewToggle">Timeline</label>
+                                                </div>
+                                                <div class = "col-md-2 pt-2">
+                                                    <div class="form-check form-switch form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox" id="SleepStageViewToggle" onchange="drawPanel_A_Charts()">
+                                                    </div>
+                                                </div>
+                                                <div class = "col-md-5" style="text-align: start;">
+                                                    <label class="col-form-label" for="SleepStageViewToggle">Hyponogram</label>
+                                                </div>
+                                            </div>
+                                        </div>
+    
+                                </div>
+                                <!-- SVG for Panel A -->
+                                <div id = "svg_container_panel_A">
+                                    <div id="hypnogram">
+                                        <div id ="toolTipApneaEventsA" style="position: absolute; background-color: #fdfdfd; border: 3px solid #000000; padding: 6px; border-radius: 8px;display:none;"></div>  
+
+                                        <svg id = "hypnogram_svg"></svg>  
+                                    </div>
+                                    <div id="belt_chart">
+                                        <p id="apnea_stat"></p>
+                                        <svg id = "belt_chart_svg"></svg>
+                                    </div>
+                                    <div id="ahi">
+                                        <p id="ahiText">Diagnosis</p>
+                                    </div>
+                                    <!-- <svg id="sleep_stages_A_svg"></svg> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel A Visualization ends-->
+
+
+
+                    <!-- Panel D Visualization starts-->
+
+
+                    <div class="col-md-5 visual_panels">
+                        <div id="sleep_stages_panel_D" class="border border-dark rounded bg-light shadow-sm mb-2 mt-2 ms-1 me-2 p-2">
+                            <div id = "Panel_D_content_div">
+                                <div id = "PatientComparisonToggleContainer" class="row p-1">
+                                    <div class = "col-md-6" style="text-align: end;">
+                                        <label class="col-form-label">Session Comparision</label>
+                                    </div>
+                                    <div class = "col-md-1 align-self-center">
+                                        <div class="form-check form-switch form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="PatientComparisonToggle" onchange="drawPanelDCharts()">
+                                        </div>
+                                    </div>
+                                    <div class = "col-md-5" style="text-align: start;">
+                                        <label class="col-form-label" for="PatientComparisonToggle">Patient Comparision</label>
+                                    </div>
+                                </div>
+
+                                <!-- Panel D SVG-->
+                                <div id = "svg_container_panel_D">
+                                    <svg id="panel_D_svg"></svg>
+                                </div>
+
+                                <!-- Panel D Controls -->
+                                <div id = "Panel_D_controls" class="d-flex align-items-center">
+                                    <label for="Sleep_Stage_Selection_Panel_D" class="form-label d-inline pe-2 text-center">Sleep Stage Selection: </label>
+                                    <select id="Sleep_Stage_Selection_Panel_D" name="panel_D_sleep_stage_selection" class="form-select d-inline p-1" aria-label="Sleep_Stage_Selection_Panel_D" onchange="drawPanelDCharts()">
+                                        <option value="All_stages" selected>All Stages</option>
+                                        <option value="Wake">WAKE</option>
+                                        <option value="NonREM1">NON REM-1</option>
+                                        <option value="NonREM2">NON REM-2</option>
+                                        <option value="NonREM3">NON REM-3</option>
+                                        <option value="REM">REM</option>
+                                    </select>
+                                    <input type="button" value="Sync" class="btn btn-success float-end ms-3 d-inline" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel D Visualization ends-->
+
+                </div>
+
+
+                <!-- Panel A & D Visualization ends -->
+
+                <!-- Panel B, C & E Visualization starts -->
+
+
+                <div class="row">
+
+                    <!-- Panel B Visualization starts-->
+
+                    <div class="col-md-4 visual_panels">
+                        <div id="sleep_stages_panel_B" class="border border-dark rounded bg-light shadow-sm mb-2 mt-2 ms-2 me-1 p-2">
+                            <!-- Panel B SVG -->
+                            <div id="svg_container_B">
+                                <div id="correlogram">
+                                    <div id="text2"></div>
+                                    <svg id="correlogram_svg"></svg>
+                                </div>
+                                    <div class="checkbox-container">
+                                        <div id="text"></div>
+                                        <svg id="scrollBox_svg"></svg>
+                                    </div>
+                                    
+                                    <div id="line_chart">
+                                    <div id="text3"></div>
+
+                                        <svg id="line_chartSvg"></svg>
+                                    </div>
+                                    <div id="parallel_chart">
+                                    <div id="text4"></div>
+                                        
+                                        <svg id="parallel_chartSvg"></svg>
+                                    </div>
+                                    <div id ="tooltipB"></div> 
+                                        
+                            </div>
+                        </div>
+                    </div>
+                
+
+                    <!-- Panel B Visualization ends-->
+
+                    <!-- Panel C Visualization starts-->
+
+                    <div class="col-md-4 visual_panels">
+                        <div id="sleep_stages_panel_C" class="border border-dark rounded bg-light shadow-sm mb-2 mt-2 ms-1 me-1 p-2">
+                            <!-- Panel C SVG-->
+                            <div id="Panel_C_content_div">
+                                <div id = "sleep_stages_control_panel_div">
+                                    <div class="col-md-8 stage_selection_div hidden_class">
+                                        <select id="stage_selector" name="stage_selector" class="form-select d-inline m-1 p-1"  aria-label="Default select example" onchange="drawPanelCCharts()">
+                                            <option value="All Stages" selected>All Stages</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id = "svg_container">
+                                    <svg id="sleep_stages_C_svg"></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel C Visualization ends-->
+
+                    <!-- Panel E Visualization starts  -->
+                    <div class="col-md-4 visual_panels">
+                        <div id="sleep_stages_panel_E" class="border border-dark rounded bg-light shadow-sm mb-2 mt-2 ms-1 me-2 p-2">
+                            <!-- Panel E SVG-->
+                            <div id = "Panel_E_content_div" >
+                                <div id = "thresholds_div" class="d-flex justify-content-center m-2 p-2">
+                                    <div id = "thresholds_form_div">
+                                        <p style="font-weight: bold;" class="text-center" > Set Threshold Values </p>
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="respiratoryIndex" class="form-label" >Respiratory Index: &nbsp;</label>
+                                            <input id="respiratoryIndex" type="number" placeholder="5" class="form-control" name="respiratoryIndex" value="5">
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="apnea_category_thresholds" class="form-label">Apnea Category: &nbsp;</label>
+                                            <input id = "apnea_category_thresholds" type="text" placeholder="15, 30" class="form-control" pattern="\d+(,\s*\d+)*" name="apnea_category_thresholds" value="15, 30" />
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="SpO2" class="form-label">SpO2: &nbsp;</label>
+                                            <input id = "SpO2" type="number" placeholder="15" class="form-control" name="SpO2" value="15"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="pulse_rate_thresholds" class="form-label">Pulse Rate: &nbsp;</label>
+                                            <input id = "pulse_rate_thresholds" type="number" placeholder="30" class="form-control" name="pulse_rate_thresholds" value="30"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="Tracheal_thresholds" class="form-label">Tracheal: &nbsp;</label>
+                                            <input id = "Tracheal_thresholds" type="number" placeholder="15" class="form-control" name="Tracheal_thresholds" value="15"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="Microphone_thresholds" class="form-label">Microphone: &nbsp;</label>
+                                            <input id = "Microphone_thresholds" type="number" placeholder="30" class="form-control" name="Microphone_thresholds" value="30"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="effort_THO_thresholds" class="form-label">Effort THO: &nbsp;</label>
+                                            <input id = "effort_THO_thresholds" type="number" placeholder="30" class="form-control" name="effort_THO_thresholds" value="30"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="effort_ABD_thresholds" class="form-label">Effort ABD: &nbsp;</label>
+                                            <input id = "effort_ABD_thresholds" type="number" placeholder="15" class="form-control" name="effort_ABD_thresholds" value="15"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="Snore_thresholds" class="form-label">Snore: &nbsp;</label>
+                                            <input id = "Snore_thresholds" type="number" placeholder="30" class="form-control" name="Snore_thresholds" value="30"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="RR_thresholds" class="form-label">RR: &nbsp;</label>
+                                            <input id = "RR_thresholds" type="number" placeholder="30" class="form-control" name="RR_thresholds" value="30"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="Leg1_thresholds" class="form-label">Leg 1: &nbsp;</label>
+                                            <input id = "Leg1_thresholds" type="number" placeholder="15" class="form-control" name="Leg1_thresholds" value="15"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="Leg2_thresholds" class="form-label">Leg 2: &nbsp;</label>
+                                            <input id = "Leg2_thresholds" type="number" placeholder="15" class="form-control" name="Leg2_thresholds" value="15"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="EMG_Chin_thresholds" class="form-label">EMG Chin: &nbsp;</label>
+                                            <input id = "EMG_Chin_thresholds" type="number" placeholder="30" class="form-control" name="EMG_Chin_thresholds" value="30"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="EOG_ROC_A2_thresholds" class="form-label">EOG_ROC_A2: &nbsp;</label>
+                                            <input id = "EOG_ROC_A2_thresholds" type="number" placeholder="15" class="form-control" name="EOG_ROC_A2_thresholds" value="15"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="EOG_LOC_A2_thresholds" class="form-label">EOG_LOC_A2: &nbsp;</label>
+                                            <input id = "EOG_LOC_A2_thresholds" type="number" placeholder="15" class="form-control" name="EOG_LOC_A2_thresholds" value="15"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="EEG_A1_A2_thresholds" class="form-label">EEG A1 A2: &nbsp;</label>
+                                            <input id = "EEG_A1_A2_thresholds" type="number" placeholder="15" class="form-control" name="EEG_A1_A2_thresholds" value="15"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="EEG_C3_A2_thresholds" class="form-label">EEG C3 A2: &nbsp;</label>
+                                            <input id = "EEG_C3_A2_thresholds" type="number" placeholder="15" class="form-control" name="EEG_C3_A2_thresholds" value="15"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2">
+                                            <label for="EEG_C4_A1_thresholds" class="form-label">EEG C4 A1: &nbsp;</label>
+                                            <input id = "EEG_C4_A1_thresholds" type="number" placeholder="15" class="form-control" name="EEG_C4_A1_thresholds" value="15"/>
+                                        </div>
+
+                                        <div class="input-group mt-2 mb-2 justify-content-center">
+                                            <button type="button" class="btn btn-primary" onclick="recalibrateAllPanels()">Recalibrate</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id = "svg_container_panel_E">
+                                    <div id = "dotMapToggleContainer" class="row m-2">
+                                        <div class = "col-md-6" style="text-align: end;">
+                                            <label class="col-form-label" for="DotMapToggle">Distribution Chart</label>
+                                        </div>
+                                        <div class = "col-md-1 pt-2">
+                                            <div class="form-check form-switch form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="DotMapToggle" onchange="drawPanelECharts()">
+                                            </div>
+                                        </div>
+                                        <div class = "col-md-5" style="text-align: start;">
+                                            <label class="col-form-label" for="DotMapToggle">Dot Map</label>
+                                        </div>
+                                    </div>
+                                    <svg id="panel_E_svg"></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel E Visualization ends-->
+
+                </div>
+
+                <!-- Panel B, C & E Visualization ends -->
+
+
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="../static/js/sleep_data_vis.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    </body>
+</html> 
